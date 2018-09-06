@@ -1,0 +1,53 @@
+PARSER_BEGIN(islem)
+
+public class islem {
+    public static void main(String[] args)throws Exception{
+	    try{
+             int result=new islem(new java.io.StringReader(args[0])).Basla();
+	         System.out.println(result);
+		}
+		catch(Throwable e){
+		     System.out.println("Eksik Deger");
+		}
+	}
+}
+
+PARSER_END(islem)
+
+SKIP: { " " | "\t" | "\n" | "\r"                    }
+TOKEN:{ "(" | ")" | "!" | "^" | "+" | "-" | "*" | "/" | <NUM: (["0"-"9"])+> }
+
+int Basla(): {int sum;}
+{
+   sum=Bolme() <EOF> {return sum;}
+}
+int Bolme(): {int sum,x;}
+{
+    sum=Carpma() ("/" x=Carpma() {sum /=x;})*{return sum;}
+}
+int Carpma(): {int sum,x;}
+{
+    sum=Cikarma() ("*" x=Cikarma() {sum *=x;} )*{return sum;}
+}
+int Cikarma(): {int sum,x;}
+{
+    sum=Toplama() ("-" x=Toplama() {sum -=x;} )*{return sum;}
+}
+int Toplama(): {int sum,x;}
+{
+    sum=UstAl() ("+" x=UstAl() {sum +=x;} )*{return sum;}
+}
+int UstAl(): {int sum,x;}
+{
+    sum=FaktoriyelAl() ("^" x=FaktoriyelAl() {int sayac=1;for(int i=1;i<=x;i++) sayac=sayac*sum; sum=sayac;} )*{return sum;}
+}
+int FaktoriyelAl(): {int sum,x;}
+{
+    sum=Son() ("!" {int sayac=1;for(int i=1;i<=sum;i++) sayac=sayac*i;sum=sayac;x=sum;} )*{return sum;}
+}
+int Son():{int x; Token n;}
+{
+    n=<NUM> {return Integer.parseInt(n.image);}
+	|
+	"(" x=Bolme() ")" {return x;}
+}
